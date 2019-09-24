@@ -1,0 +1,10 @@
+{:paths ["src" "resources"]
+ :deps
+ {clojure.java-time {:mvn/version "0.3.2"}}
+ :aliases
+ {:test
+  {:extra-paths ["test"]
+   :main-opts   ["-m" "kaocha.runner"]
+   :extra-deps
+   {org.clojure/test.check {:mvn/version "0.10.0"}
+    lambdaisland/kaocha    {:mvn/version "0.0-541"}}}}}
