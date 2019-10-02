@@ -18,6 +18,16 @@
   ([f] (core/map (fn [[k v]] [k (f v)])))
   ([f map] (into {} (map-values f) map)))
 
+(defn map-leaves
+  "Returns a transducer for mapping `f` over all leaf values in a map-entry. Nested maps will be
+  traversed.
+
+  If called with `map` returns a new map with `f` applied over all leaves. "
+  ([f] (core/map (fn [[k v]] [k (if (map? v)
+                                  (map-leaves f v)
+                                  (f v))])))
+  ([f map] (into {} (map-leaves f) map)))
+
 (defn remove-values
   "Return a transducer which will only match map-entries for which the
   `pred` called on values returned logical `false`.

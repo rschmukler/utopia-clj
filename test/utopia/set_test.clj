@@ -20,6 +20,15 @@
                                 :b 1
                                 :c 2})))))
 
+(deftest map-leaves-test
+  (testing "maps f over all leaves"
+    (is (= {:a 1
+            :b 2
+            :c {:a 1}}
+           (sut/map-leaves inc {:a 0
+                                :b 1
+                                :c {:a 0}})))))
+
 (deftest remove-values-test
   (testing "removes all values for which f returns true"
     (is (= {:b 1
