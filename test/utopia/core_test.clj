@@ -3,7 +3,13 @@
             [clojure.test :refer [deftest testing is are]]
             [clojure.test.check.generators :as gen]
             [clojure.test.check.properties :as prop]
-            [clojure.test.check.clojure-test :refer [defspec]]))
+            [clojure.test.check.clojure-test :refer [defspec]]
+            [clojure.spec.alpha :as s]))
+
+
+(def gen-simple-map
+  "Generator for simple map"
+  (gen/map (gen/one-of [gen/keyword gen/int gen/string]) gen/any))
 
 (deftest deep-merge-test
   (testing "is identity for single arguments"
@@ -44,18 +50,41 @@
   (testing "updates existing keys"
     (is (= {:a 2 :b 1}
            (sut/update-if-some {:a 1 :b 2}
-                             :a inc
-                             :b dec))))
+                               :a inc
+                               :b dec))))
   (testing "does nothing for missing keys"
     (is (= {:a 1 :b nil}
            (sut/update-if-some {:a 1
-                                  :b nil} :b inc))))
+                                :b nil} :b inc))))
   (testing "does nothing for missing keys"
     (is (= {:a 1}
            (sut/update-if-exists {:a 1} :b inc))))
   (testing "raises an argument error if needed"
     (is (thrown? IllegalArgumentException
                  (sut/update-if-some {} :b)))))
+
+(defspec partition-keys-all-keys-first-is-identity
+  100
+  (prop/for-all [m gen-simple-map]
+      (= m
+         (first (sut/partition-keys m (keys m))))))
+
+(defspec partition-keys-all-keys-second-is-empty
+  100
+  (prop/for-all [m gen-simple-map]
+      (= {}
+         (second (sut/partition-keys m (keys m))))))
+
+(defspec partition-keys-no-keys-first-is-empty
+  100
+  (prop/for-all [m gen-simple-map]
+      (= {} (first (sut/partition-keys m [])))))
+
+(defspec partition-keys-no-keys-second-is-identity
+  100
+  (prop/for-all [m gen-simple-map]
+      (= m (second (sut/partition-keys m [])))))
+
 
 (deftest sum-test
   (testing "sums the numbers"

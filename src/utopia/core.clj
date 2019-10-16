@@ -38,6 +38,13 @@
             [k ((kfns k) v)])))
 
 
+(defn partition-keys
+  "Similar to `clojure.core/select-keys` but returns a vector of two maps. The first is
+  the map with the selected `keys`, while the other is the original `map` with the `keys` removed."
+  [map keys]
+  [(select-keys map keys) (apply dissoc map keys)])
+
+
 (defn sum
   "Varidic function which will sum `args`. Treats nil as 0."
   [& args]
