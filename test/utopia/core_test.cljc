@@ -37,14 +37,15 @@
   (testing "updates existing keys"
     (is (= {:a 2 :b 1}
            (sut/update-if-exists {:a 1 :b 2}
-                             :a inc
-                             :b dec))))
+                                 :a inc
+                                 :b dec))))
   (testing "does nothing for missing keys"
     (is (= {:a 1}
            (sut/update-if-exists {:a 1} :b inc))))
-  (testing "raises an argument error if needed"
-    (is (thrown? IllegalArgumentException
-                 (sut/update-if-exists {} :b)))))
+  #?(:clj
+     (testing "raises an argument error if needed"
+       (is (thrown? IllegalArgumentException
+                    (sut/update-if-exists {} :b))))))
 
 (deftest update-if-some-test
   (testing "updates existing keys"
@@ -59,9 +60,10 @@
   (testing "does nothing for missing keys"
     (is (= {:a 1}
            (sut/update-if-exists {:a 1} :b inc))))
-  (testing "raises an argument error if needed"
-    (is (thrown? IllegalArgumentException
-                 (sut/update-if-some {} :b)))))
+  #?(:clj
+     (testing "raises an argument error if needed"
+       (is (thrown? IllegalArgumentException
+                    (sut/update-if-some {} :b))))))
 
 (defspec partition-keys-all-keys-first-is-identity
   100

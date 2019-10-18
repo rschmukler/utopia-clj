@@ -11,4 +11,12 @@
    :main-opts   ["-m" "kaocha.runner"]
    :extra-deps
    {org.clojure/test.check {:mvn/version "0.10.0"}
-    lambdaisland/kaocha    {:mvn/version "0.0-541"}}}}}
+    lambdaisland/kaocha    {:mvn/version "0.0-541"}}}
+  :test-cljs
+  {:extra-paths ["test"]
+   :main-opts   ["-m" "cljs-test-runner.main" "-o" ".cljs-test-runner-out"]
+   :extra-deps
+   {org.clojure/clojurescript   {:mvn/version "1.10.520"}
+    com.andrewmcveigh/cljs-time {:mvn/version "0.5.2"}
+    olical/cljs-test-runner     {:mvn/version "3.7.0"}
+    org.clojure/test.check      {:mvn/version "0.10.0"}}}}}

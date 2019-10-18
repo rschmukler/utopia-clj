@@ -134,10 +134,7 @@
   1"
   [n]
   (fn [& args]
-    (try
-      (nth args (dec n))
-      (catch IndexOutOfBoundsException _
-        nil))))
+    (nth args (dec n) nil)))
 
 
 (defn dedupe-by
