@@ -107,6 +107,12 @@
       1.12  1.1234567 2
       1.123 1.1234567 3)))
 
+(deftest find-first-test
+  (testing "returns items based on pred"
+    (is (= 2 (sut/find-first even? [1 2 3 4]))))
+  (testing "applies extract if provided"
+    (is (= 3 (sut/find-first even? inc [1 2 4])))))
+
 (deftest indistinct-test
   (let [input [1 2 3 4 5 6 1 2 3 7 8 9]]
     (testing "works over a collection"

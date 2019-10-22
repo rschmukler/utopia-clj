@@ -63,6 +63,22 @@
      (/ (Math/round (* n factor))
         factor))))
 
+
+(defn find-first
+  "Returns the first item matching `pred` in `coll`.
+
+  Optionally takes an `extract` function which will be applied iff the matching item is not `nil`.
+
+  Example:
+
+  (find-first :primary :email [{:primary false :email \"bob@gmail.com\"}
+                              {:primary true :email \"foo@bar.com\"}])
+  "
+  ([pred coll] (find-first pred identity coll))
+  ([pred extract coll]
+   (when-some [item (first (filter pred coll))]
+     (extract item))))
+
 (defn indistinct
   "Returns elements in a sequence that appear more than once.
 
