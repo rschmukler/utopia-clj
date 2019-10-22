@@ -202,3 +202,66 @@
   [expr msg info]
   `(when (not ~expr)
      (throw (ex-info ~msg ~info))))
+
+(defn map-keys
+  "Returns a transducer for mapping `f` over all keys in a map-entry.
+
+  If called with `map`, returns a new map with `f` applied over all keys."
+  ([f] (core/map (fn [[k v]] [(f k) v])))
+  ([f map] (when map (into {} (map-keys f) map))))
+
+(defn map-vals
+  "Returns a transducer for mapping `f` over all values in a map-entry.
+
+  If called with `map`, returns a new map with `f` applied over all values."
+  ([f] (core/map (fn [[k v]] [k (f v)])))
+  ([f map] (when map (into {} (map-vals f) map))))
+
+(defn map-leaves
+  "Returns a transducer for mapping `f` over all leaf values in a map-entry. Nested maps will be
+  traversed.
+
+  If called with `map` returns a new map with `f` applied over all leaves. "
+  ([f] (core/map (fn [[k v]] [k (if (map? v)
+                                  (map-leaves f v)
+                                  (f v))])))
+  ([f map] (when map (into {} (map-leaves f) map))))
+
+(defn remove-vals
+  "Return a transducer which will only match map-entries for which the
+  `pred` called on values returned logical `false`.
+
+  If called with `map`, will return a new map executing the transducer."
+  ([f] (remove (fn [[_ v]] (f v))))
+  ([f map] (when map (into {} (remove-vals f) map))))
+
+(defn filter-vals
+  "Return a transducer which will only match map-entries for which the
+  `pred` called on values returned logical `true`.
+
+  If called with `map`, will return a new map executing the transducer."
+  ([f] (filter (fn [[_ v]] (f v))))
+  ([f map] (when map (into {} (filter-vals f) map))))
+
+(defn remove-keys
+  "Return a transducer which will only match map-entries for which the
+  `pred` called on keys returned logical `false`.
+
+  If called with `map`, will return a new map executing the transducer."
+  ([f] (remove (fn [[k _]] (f k))))
+  ([f map] (when map (into {} (remove-keys f) map))))
+
+(defn filter-keys
+  "Return a transducer which will only match map-entries for which the
+  `pred` called on keys returned logical `true`.
+
+  If called with `map`, will return a new map executing the transducer."
+  ([f] (filter (fn [[k _]] (f k))))
+  ([f map] (when map (into {} (filter-keys f) map))))
+
+(defn ns-keys
+  "Returns a transducer which will namespace all keys in a map.
+
+  If called with `map` returns a new map executing the transducer."
+  ([ns] (map-keys (comp (partial keyword ns) name)))
+  ([ns map] (when map (into {} (ns-keys ns) map))))
