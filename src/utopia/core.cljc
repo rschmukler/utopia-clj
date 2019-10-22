@@ -23,6 +23,19 @@
     x
     (recur (deep-merge* x y) maps)))
 
+(defn apply-if
+  "Conditionally applies `(f x)` if `pred` returns `true`, otherwise returns `x`."
+  [x pred f]
+  (if (pred x)
+    (f x)
+    x))
+
+(defn apply-when
+  "Conditionally applies `(f x)` if `pred` returns `true`, otherwise returns nil"
+  [x pred f]
+  (when (pred x)
+    (f x)))
+
 (defn update-if-exists
   "Like `clojure.core/update`, but only calls `f` if the `k` exists
   in the `m`."

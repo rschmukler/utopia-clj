@@ -33,6 +33,30 @@
               :d {:z 5}}
              (sut/deep-merge a b c))))))
 
+(defspec apply-if-is-identity-if-pred-returns-false
+  5
+  (prop/for-all [x gen/any-equatable]
+      (is (= x
+             (sut/apply-if x (constantly false) (constantly :modified))))))
+
+(defspec apply-if-applies-if-pred-returns-true
+  5
+  (prop/for-all [x gen/int]
+      (is (= (inc x)
+             (sut/apply-if x (constantly true) inc)))))
+
+(defspec apply-when-is-nil-if-pred-returns-false
+  5
+  (prop/for-all [x gen/any-equatable]
+      (is (nil?
+           (sut/apply-when x (constantly false) (constantly :modified))))))
+
+(defspec apply-when-applies-if-pred-returns-true
+  5
+  (prop/for-all [x gen/int]
+      (is (= (inc x)
+             (sut/apply-when x (constantly true) inc)))))
+
 (deftest update-if-exists-test
   (testing "updates existing keys"
     (is (= {:a 2 :b 1}
