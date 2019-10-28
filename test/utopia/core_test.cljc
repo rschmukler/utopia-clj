@@ -295,13 +295,25 @@
     (is (nil? (sut/filter-keys nil? nil)))))
 
 
-(deftest namespace-keys-test
+(deftest ns-keys-test
   (testing "applies a namespace to non-namespaces keys"
     (is (= {:test/foo "A"
             :test/bar "B"}
-           (sut/namespace-keys "test"
-                               {:foo "A"
-                                :bar "B"}))))
+           (sut/ns-keys "test"
+                        {:foo "A"
+                         :bar "B"}))))
 
   (testing "nil punning"
-    (is (nil? (sut/namespace-keys "foo" nil)))))
+    (is (nil? (sut/ns-keys "foo" nil)))))
+
+
+(deftest assoc-some
+  (testing "is identity for nil vals"
+    (let [m {:a 1 :b 2 :c 3}]
+      (is (= m
+             (sut/assoc-some m :a nil :d nil)))))
+
+  (testing "is assoc for non-nil vals"
+    (let [m {:a 1 :b 2 :c 3}]
+      (is (= {:a 2 :b 2 :c 3}
+             (sut/assoc-some m :a 2 :c nil))))))

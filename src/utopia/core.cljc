@@ -3,7 +3,6 @@
   (:require [clojure.core :as core])
   (:refer-clojure :exclude [rand]))
 
-
 (defn- deep-merge*
   "Recursive helper function for deep-merge. Keeps the right-most value
   within nested maps."
@@ -265,3 +264,12 @@
   If called with `map` returns a new map executing the transducer."
   ([ns] (map-keys (comp (partial keyword ns) name)))
   ([ns map] (when map (into {} (ns-keys ns) map))))
+
+(defn assoc-some
+  "Like `clojure.core/assoc` but only associates the key and value if the `val` is `some?`."
+  [m & {:as kvs}]
+  (reduce-kv
+   assoc
+   m
+   (filter-vals some? kvs)))
+
