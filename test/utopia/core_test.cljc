@@ -112,6 +112,12 @@
       (= m (second (sut/partition-keys m [])))))
 
 
+(deftest extract-test
+  (is (= [[42 200] {:name "Bob"}]
+         (sut/extract {:name "Bob" :weight 200 :age 42}
+                      [:age :weight]))))
+
+
 (deftest sum-test
   (testing "sums the numbers"
     (is 6 (sut/sum 1 2 3)))

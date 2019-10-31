@@ -56,6 +56,22 @@
   [map keys]
   [(select-keys map keys) (apply dissoc map keys)])
 
+(defn extract
+  "Returns a tuple of a vector of the vals of `keys` and `map` with `keys` removed.
+
+  Example:
+
+  (extract {:name \"Bob\" :age 42 :weight 200} [:age :weight])
+  ;; [[42 200] {:name \"Bob\"}]"
+  [map keys]
+  (loop [keys    keys
+         vals    (transient [])
+         new-map (transient map)]
+    (if (seq keys)
+      (let [k (first keys)
+            v (get map k)]
+        (recur (rest keys) (conj! vals v) (dissoc! new-map k)))
+      [(persistent! vals) (persistent! new-map)])))
 
 (defn sum
   "Varidic function which will sum `args`. Treats nil as 0."
