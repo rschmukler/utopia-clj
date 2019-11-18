@@ -1,5 +1,5 @@
 (ns utopia.core-test
-  (:require [utopia.core :as sut]
+  (:require [utopia.core :as sut :refer [fex]]
             [clojure.test :refer [deftest testing is are]]
             [clojure.test.check.generators :as gen]
             [clojure.test.check.properties :as prop]
@@ -317,3 +317,22 @@
            ((sut/fex (fn [_] (throw (ex-info "Fail" {}))) :fail)
             5)))))
 
+(deftest find-paths-test
+  (testing "non-nested maps"
+    (is (= '([:a]
+             [:c])
+           (sut/find-paths even? {:a 2 :b 3 :c 4}))))
+  (testing "nested maps"
+    (is (= '([:a]
+             [:b :c]
+             [:b :e :f])
+           (sut/find-paths (fex even? false) {:a 2
+                                              :b {:c 4 :d 5 :e {:f 6}}
+                                              :c 3}))))
+
+  (testing "nested vectors"
+    (is (= '([:a 0 0]
+             [:b :c 0 :d])
+           (sut/find-paths (fex even? false)
+                           {:a [[2] [3 [5]]]
+                            :b {:c [{:d 4}]}})))))

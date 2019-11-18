@@ -286,3 +286,24 @@
          (catch Exception _
            ex-val))))
 
+(defn find-paths
+  "Returns a sequence of vector paths for which `pred` returns true.
+
+  For nested maps, it will be called on the `pred` will be called with the `val` of the map entry.
+
+  Note that this performs a pre-walk and in the case of nested maps or vectors, `pred` will be
+  called with them before traversing their children."
+  [pred coll]
+  (let [results (transient [])
+        find-paths*
+        (fn find-paths* [path coll]
+          (cond
+           (map? coll)       (doall (map #(find-paths* path %) coll))
+           (map-entry? coll) (if (pred (val coll))
+                               (conj! results (conj path (key coll)))
+                               (find-paths* (conj path (key coll)) (val coll)))
+           (vector? coll)    (doall (map-indexed #(find-paths* (conj path %1) %2) coll))
+           (pred coll)       (conj! results path)
+           :else             nil))]
+    (find-paths* [] coll)
+    (persistent! results)))
