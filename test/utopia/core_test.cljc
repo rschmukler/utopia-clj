@@ -182,24 +182,6 @@
     (is (= "Value: 6\n" (with-out-str (sut/inspect "Value" inc 5))))))
 
 
-(deftest ns-select-keys-test
-  (testing "works with nil ns"
-    (is (= {:foo 1 :bar 2}
-           (sut/ns-select-keys {:test/foo 1
-                                :bar      2}
-                               [:test/foo
-                                :bar]))))
-  (testing "works with other ns"
-    (are [ns] (= {:test/foo 1 :test/bar 2}
-                 (sut/ns-select-keys {:test/foo 1
-                                      :bar      2}
-                                     [:test/foo
-                                      :bar]
-                                     ns))
-      :test
-      "test"
-      :test/foo)))
-
 (deftest arg-test
   (testing "returns the correct argument"
     (is (= 0 ((sut/arg 1) 0 1 2 3)))

@@ -157,19 +157,6 @@
    v))
 
 
-(defn ns-select-keys
-  "Behaves like select keys but applies a new namespace to all keys selected.
-  If `new-ns` is `nil` then removes any namespace."
-  ([m keys] (ns-select-keys m keys nil))
-  ([m keys new-ns]
-   (let [new-ns    (cond
-                     (keyword? new-ns) (or (namespace new-ns)
-                                           (name new-ns))
-                     (string? new-ns)  new-ns)
-         ->new-key (fn [[k v]] [(keyword new-ns (name k)) v])]
-     (into {} (map ->new-key) m))))
-
-
 (defn arg
   "Returns a function which will take any number of arguments and return
   the 1-based index argument of `n`. Mostly useful for composition.
