@@ -276,3 +276,13 @@
    m
    (filter-vals some? kvs)))
 
+
+(defn fex
+  "Similar `clojure.core/fnil`. Returns a function which will call `f` when called
+  and return `ex-val` in the case that any exception occurs."
+  [f ex-val]
+  (fn [& args]
+    (try (apply f args)
+         (catch Exception _
+           ex-val))))
+

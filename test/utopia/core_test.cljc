@@ -305,3 +305,15 @@
     (let [m {:a 1 :b 2 :c 3}]
       (is (= {:a 2 :b 2 :c 3}
              (sut/assoc-some m :a 2 :c nil))))))
+
+
+(deftest fex-test
+  (testing "returns the val of f if nothing is thrown"
+    (is (= 5
+           ((sut/fex identity :fail) 5))))
+
+  (testing "returns the exceptional-val if something is thrown"
+    (is (= :fail
+           ((sut/fex (fn [_] (throw (ex-info "Fail" {}))) :fail)
+            5)))))
+
