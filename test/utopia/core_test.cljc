@@ -342,3 +342,19 @@
            (sut/find-paths (fex even? false)
                            {:a [[2] [3 [5]]]
                             :b {:c [{:d 4}]}})))))
+
+
+(deftest dissoc-in-test
+  (testing "is identical to dissoc for single path"
+    (let [some-map (gen/generate gen-simple-map)
+          tgt-key  (key (rand-nth (into [] identity some-map)))]
+      (is (= (dissoc some-map tgt-key)
+             (sut/dissoc-in some-map [tgt-key])))))
+
+  (testing "supports dissocing in nested paths"
+    (let [m {:a 1 :b 2 :c 3 :d {:e {:f 6
+                                    :g true}
+                                :h 9}}]
+      (is (= {:a 1 :b 2 :c 3 :d {:e {:g true}
+                                 :h 9}}
+             (sut/dissoc-in m [:d :e :f]))))))

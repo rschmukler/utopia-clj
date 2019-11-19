@@ -308,3 +308,12 @@
            :else             nil))]
     (find-paths* [] coll)
     (persistent! results)))
+
+(defn dissoc-in
+  "Like `clojure.core/dissoc` but takes a path like `clojure.core/get-in`"
+  [m path]
+  (let [path-count (count path)]
+    (if (= 1 path-count)
+      (dissoc m (first path))
+      (let [[update-tgt [dissoc-tgt]] (split-at (- path-count 1) path)]
+        (update-in m update-tgt dissoc dissoc-tgt)))))
