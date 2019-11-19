@@ -283,7 +283,8 @@
   [f ex-val]
   (fn [& args]
     (try (apply f args)
-         (catch Exception _
+         (catch #?(:clj Exception
+                   :cljs js/Error) _
            ex-val))))
 
 (defn find-paths
