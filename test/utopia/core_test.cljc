@@ -9,7 +9,13 @@
 
 (def gen-simple-map
   "Generator for simple map"
-  (gen/map (gen/one-of [gen/keyword gen/int gen/string]) gen/any))
+  (let [simple-gen (gen/one-of [gen/keyword gen/int gen/string gen/boolean])
+        simple-val (gen/frequency [[5 simple-gen]
+                                   [1 (gen/map simple-gen simple-gen)]
+                                   [1 (gen/list simple-gen)]
+                                   [1 (gen/vector simple-gen)]
+                                   [1 (gen/set simple-gen)]])]
+    (gen/map simple-gen simple-val)))
 
 (deftest deep-merge-test
   (testing "is identity for single arguments"
