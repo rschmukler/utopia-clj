@@ -4,7 +4,7 @@
                :cljs [cljs.test :as t :include-macros true :refer [deftest is testing]])))
 
 (deftest match?-test
-  (testing "returns true if the pattern matches"
+  (testing "returns whether the pattern matches"
     (is (sut/match? 5 5))
-    (is (sut/match? 5 _))
-    (is (not (sut/match? 5 [x])))))
+    (is (sut/match? _ 5))
+    (is (= false (sut/match? {:name _} {:foo 5})))))
