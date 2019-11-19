@@ -1,6 +1,7 @@
 (ns utopia.core
   "Namespace providing extensions to clojure's standard library"
-  (:require [clojure.core :as core])
+  (:require [clojure.core :as core]
+            [utopia.walk :as u.walk])
   (:refer-clojure :exclude [rand]))
 
 (defn- deep-merge*
@@ -295,18 +296,13 @@
   Note that this performs a pre-walk and in the case of nested maps or vectors, `pred` will be
   called with them before traversing their children."
   [pred coll]
-  (let [results (transient [])
-        find-paths*
-        (fn find-paths* [path coll]
-          (cond
-           (map? coll)       (doall (map #(find-paths* path %) coll))
-           (map-entry? coll) (if (pred (val coll))
-                               (conj! results (conj path (key coll)))
-                               (find-paths* (conj path (key coll)) (val coll)))
-           (vector? coll)    (doall (map-indexed #(find-paths* (conj path %1) %2) coll))
-           (pred coll)       (conj! results path)
-           :else             nil))]
-    (find-paths* [] coll)
+  (let [results (transient [])]
+    (u.walk/pathwalk-pre
+     (fn [path form]
+       (when (pred form)
+         (conj! results path))
+       form)
+     coll)
     (persistent! results)))
 
 (defn dissoc-in

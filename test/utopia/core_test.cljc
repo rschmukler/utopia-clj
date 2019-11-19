@@ -327,7 +327,7 @@
   (testing "non-nested maps"
     (is (= '([:a]
              [:c])
-           (sut/find-paths even? {:a 2 :b 3 :c 4}))))
+           (sut/find-paths (fex even? false) {:a 2 :b 3 :c 4}))))
   (testing "nested maps"
     (is (= '([:a]
              [:b :c]
@@ -340,6 +340,11 @@
     (is (= '([:a 0 0]
              [:b :c 0 :d])
            (sut/find-paths (fex even? false)
+                           {:a [[2] [3 [5]]]
+                            :b {:c [{:d 4}]}}))))
+  (testing "nested vectors target nested maps"
+    (is (= '([:b :c 0])
+           (sut/find-paths (fex #(contains? % :d) false)
                            {:a [[2] [3 [5]]]
                             :b {:c [{:d 4}]}})))))
 
