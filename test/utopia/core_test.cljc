@@ -3,8 +3,7 @@
             [clojure.test :refer [deftest testing is are]]
             [clojure.test.check.generators :as gen]
             [clojure.test.check.properties :as prop]
-            [clojure.test.check.clojure-test :refer [defspec]]
-            [clojure.spec.alpha :as s]))
+            [clojure.test.check.clojure-test :refer [defspec]]))
 
 
 (def gen-simple-map
@@ -170,7 +169,7 @@
 (defspec rand-is-random-prop
   100
   (prop/for-all [x (gen/such-that #(not= 0.0 %) (gen/double* {:infinite? false
-                                                              :NaN? false}))]
+                                                              :NaN?      false}))]
       (not= (sut/rand x) (sut/rand x))))
 
 
@@ -363,3 +362,45 @@
       (is (= {:a 1 :b 2 :c 3 :d {:e {:g true}
                                  :h 9}}
              (sut/dissoc-in m [:d :e :f]))))))
+
+(deftest index-by-test
+  (let [data [{:name "Bob" :age 42}
+              {:name "Alice" :age 63}
+              {:name "Steve" :age 6}
+              {:name "Edward" :age 22}
+              {:name "Maxine" :age 26}]]
+    (testing "uses `f` to build an index"
+      (let [name->rec (sut/index-by :name data)]
+        (is (= (count data)
+               (count name->rec)))
+
+        (doseq [{:keys [name] :as rec} data]
+          (is (= rec (name->rec name))))))
+
+    (testing "optionally takes a `g` to build the value"
+      (let [name->age (sut/index-by :name :age data)]
+
+        (is (= (count data)
+               (count name->age)))
+
+        (doseq [{:keys [name age]} data]
+          (is (= age(name->age name))))))))
+
+(deftest group-by-test
+  (let [data [{:name "Bob" :age 31}
+              {:name "Alice" :age 31}
+              {:name "Steve" :age 25}
+              {:name "Maxine" :age 25}]]
+    (testing "behaves like clojure.core/group-by for simple calls"
+      (is (= (group-by :age data)
+             (sut/group-by :age data))))
+
+    (testing "allows providing a view function"
+      (is (= {31 ["Bob" "Alice"]
+              25 ["Steve" "Maxine"]}
+             (sut/group-by :age :name data))))
+
+    (testing "allows specifying an into collection type"
+      (is (= {31 #{"Bob" "Alice"}
+              25 #{"Steve" "Maxine"}}
+             (sut/group-by :age :name #{} data))))))

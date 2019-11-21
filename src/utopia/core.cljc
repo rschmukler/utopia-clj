@@ -2,7 +2,7 @@
   "Namespace providing extensions to clojure's standard library"
   (:require [clojure.core :as core]
             [utopia.walk :as u.walk])
-  (:refer-clojure :exclude [rand]))
+  (:refer-clojure :exclude [rand group-by]))
 
 (defn- deep-merge*
   "Recursive helper function for deep-merge. Keeps the right-most value
@@ -313,3 +313,31 @@
       (dissoc m (first path))
       (let [[update-tgt [dissoc-tgt]] (split-at (- path-count 1) path)]
         (update-in m update-tgt dissoc dissoc-tgt)))))
+
+(defn index-by
+  "Indexes a `coll` by the value returned by `f`. Returns a map.
+
+  Optionally takes a function `g` which will be applied to the val in the map.
+
+  user=> (index-by :name [{:name \"Bob\" :age 42}])
+  {\"Bob\" {:name \"Bob\" :age 42}}
+
+  user=> (index-by :name :age [{:name \"Bob\" :age 42}])
+  {\"Bob\" 42}"
+  ([f coll] (index-by f identity coll))
+  ([f g coll] (into {} (map (juxt f g)) coll)))
+
+(defn group-by
+  "Similar to `clojure.core/group-by`. Returns a map with keys of
+  `f` applied to items in `coll`.
+
+  Optionally takes a function `g` which will be applied to the values.
+
+  Lastly, takes an `into` collection, which will be used to create the base collection at each key.
+  This allows you to specify grouping into sets or vectors."
+  ([f coll] (group-by f identity [] coll))
+  ([f g coll] (group-by f g [] coll))
+  ([f g into coll]
+   (reduce #(update %1 (f %2) (fnil conj into) (g %2))
+           {}
+           coll)))
