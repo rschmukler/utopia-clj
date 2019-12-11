@@ -404,3 +404,14 @@
       (is (= {31 #{"Bob" "Alice"}
               25 #{"Steve" "Maxine"}}
              (sut/group-by :age :name #{} data))))))
+
+(deftest unfold-test
+  (testing "skips nil items, and terminates on nil"
+    (let [f #(cond
+              (even? %) [nil (inc %)]
+              (= 7 %)   nil
+              :else     [% (inc %)])]
+      (is (= '(1
+               3
+               5)
+             (sut/unfold f 1))))))

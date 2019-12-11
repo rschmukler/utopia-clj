@@ -341,3 +341,20 @@
    (reduce #(update %1 (f %2) (fnil conj into) (g %2))
            {}
            coll)))
+
+(defn unfold
+  "Produces a lazy sequence by invoking f with initial.
+
+  `f` should return a tuple of an item and new state.
+
+  If the item is `nil` nothing will be emitted.
+
+  If `f` returns `nil` the sequence will terminate.
+
+  See also: `iterate`"
+  [f initial]
+  (when-let [[val new-state] (f initial)]
+    (lazy-seq
+     (if val
+       (cons val (unfold f new-state))
+       (unfold f new-state)))))
